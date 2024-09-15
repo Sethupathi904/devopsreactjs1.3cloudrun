@@ -1,21 +1,23 @@
-# Use official Node.js image from Docker Hub (use the latest 18.x version)
+# Use the official Node.js image.
 FROM node:18
 
-# Set the working directory
+# Set the working directory in the container.
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy package.json and package-lock.json.
 COPY package*.json ./
+
+# Install dependencies.
 RUN npm install
 
-# Copy the remaining application code
+# Copy the rest of the application code.
 COPY . .
 
-# Build the app for production
+# Build the app for production.
 RUN npm run build
 
-# Expose the application port
-EXPOSE 80
+# Expose the port the app runs on.
+EXPOSE 3000
 
-# Start the application
+# Start the application.
 CMD ["npm", "start"]
