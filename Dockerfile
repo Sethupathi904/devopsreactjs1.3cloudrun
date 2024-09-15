@@ -1,23 +1,21 @@
-# Use official node image as the base image
-FROM node:18.3.1
+# Use official Node.js image from Docker Hub (use the latest 18.x version)
+FROM node:18
 
 # Set the working directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and install dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the remaining application code
 COPY . .
 
-# Build the React app
+# Build the app for production
 RUN npm run build
 
-# Expose port 3000
-EXPOSE 3000
+# Expose the application port
+EXPOSE 80
 
-# Start the app
+# Start the application
 CMD ["npm", "start"]
