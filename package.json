@@ -5,27 +5,7 @@
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@vds/accordions": "^4.0.19-gc.0",
-    "@vds/buttons": "4.0.10",
-    "@vds/grids": "4.0.5",
-    "@vds/icons": "4.5.2",
-    "@vds/selects": "4.0.17",
-    "@vds/tables": "4.1.4",
-    "@vds/tabs": "4.1.1",
-    "@vds/utilities": "4.0.3",
-    "ajv": "^8.17.1",
-    "ajv-keywords": "^5.1.0",
-    "bootstrap": "^5.3.3",
-    "react": "^18.3.1",
-    "react-bootstrap": "^2.10.4",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.1",
-    "react-scripts": "5.1.0-next.14",
-    "recharts": "^2.12.7",
-    "sass": "^1.77.8",
-    "styled-components": "^6.1.12",
-    "web-vitals": "^2.1.4"
+    "@testing-library/user-event": "^13.5.0"
   },
   "scripts": {
     "start": "react-scripts start",
