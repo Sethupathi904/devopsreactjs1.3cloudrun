@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        PROJECT_ID = 'groovy-legacy-434014-d0'
+        IMAGE_NAME = 'us-central1-docker.pkg.dev/groovy-legacy-434014-d0/react-app/react-app'
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account') // Update with your GCP credentials ID
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -11,7 +17,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t us-central1-docker.pkg.dev/groovy-legacy-434014-d0/react-app/react-app:2 .'
+                    // Build the Docker image
+                    def image = docker.build("${IMAGE_NAME}:${env.BUILD_ID}", "--no-cache")
                 }
             }
         }
@@ -19,9 +26,11 @@ pipeline {
         stage('Push Docker Image to Artifact Registry') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'gcp-service-account', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh 'docker login -u $USERNAME -p $PASSWORD https://us-central1-docker.pkg.dev'
-                        sh 'docker push us-central1-docker.pkg.dev/groovy-legacy-434014-d0/react-app/react-app:2'
+                    // Authenticate and push the Docker image
+                    withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh "gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
+                        sh "gcloud auth configure-docker us-central1-docker.pkg.dev"
+                        sh "docker push ${IMAGE_NAME}:${env.BUILD_ID}"
                     }
                 }
             }
@@ -30,7 +39,11 @@ pipeline {
         stage('Deploy to Cloud Run') {
             steps {
                 script {
-                    // Add deployment steps here
+                    // Deploy the Docker image to Cloud Run
+                    withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh "gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
+                        sh "gcloud run deploy my-react-app --image ${IMAGE_NAME}:${env.BUILD_ID} --platform managed --region us-central1 --allow-unauthenticated"
+                    }
                 }
             }
         }
@@ -38,23 +51,7 @@ pipeline {
 
     post {
         always {
-            // Add cleanup steps if needed
-        }
-
-        success {
-            emailext(
-                to: 'you@example.com',
-                subject: 'Build Successful',
-                body: 'The build was successful!'
-            )
-        }
-
-        failure {
-            emailext(
-                to: 'you@example.com',
-                subject: 'Build Failed',
-                body: 'The build failed. Please check the Jenkins job for details.'
-            )
+            cleanWs()
         }
     }
 }
